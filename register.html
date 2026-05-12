@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    />
+
+    <title>Register - UNILIFE</title>
+
+    <link rel="stylesheet" href="style2.css">
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    >
+
+</head>
+
+<body>
+
+<div class="auth-container">
+
+    <div class="card">
+
+        <h2>Créez votre compte</h2>
+
+        <input
+            id="name"
+            type="text"
+            placeholder="Nom complet établissement"
+        >
+
+        <input
+            id="email"
+            type="email"
+            placeholder="Email"
+        >
+
+        <input
+            id="password"
+            type="password"
+            placeholder="Mot de passe"
+        >
+
+        <button
+            id="registerBtn"
+            onclick="register()"
+        >
+
+            <span id="registerText">
+                S'inscrire
+            </span>
+
+            <span
+                id="registerLoader"
+                style="display:none;"
+            >
+                <i class="fa-solid fa-spinner fa-spin"></i>
+                Chargement...
+            </span>
+
+        </button>
+
+        <p>
+            Vous avez déjà un compte ?
+
+            <a href="login.html">
+                Se connecter
+            </a>
+        </p>
+
+    </div>
+
+</div>
+
+<script src="auth.js"></script>
+
+</body>
+</html>

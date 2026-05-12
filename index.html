@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+/>
+
+<title>UNILIFE gestion des notes</title>
+
+<link rel="stylesheet" href="style.css">
+
+<link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+/>
+
+<script>
+const token = localStorage.getItem("token");
+
+if (!token) {
+    window.location.href = "login.html";
+}
+</script>
+
+</head>
+
+<body>
+
+<header class="header">
+
+    <div class="header-left">
+        <i class="fa-solid fa-chart-line"></i>
+        <span>UNILIFE gestion des notes</span>
+    </div>
+
+    <div class="user-box">
+
+        <button
+            class="theme-btn"
+            onclick="toggleTheme()"
+            title="Changer le thème"
+        >
+            <i class="fa-solid fa-moon"></i>
+        </button>
+
+        <div class="user-info">
+            <i class="fa-solid fa-user"></i>
+            <span id="userInfo">Loading...</span>
+        </div>
+
+        <button
+            class="logout-btn"
+            onclick="logout()"
+            title="Déconnexion"
+        >
+            <i class="fa-solid fa-right-from-bracket"></i>
+        </button>
+
+    </div>
+
+</header>
+
+<div class="container">
+
+    <div class="card">
+
+        <h3>
+            <i class="fa-solid fa-school"></i>
+            Class / Classe
+        </h3>
+
+        <input
+            type="text"
+            id="className"
+            placeholder="Ex: PremiereA4"
+        >
+
+        <h3>
+            <i class="fa-solid fa-user-graduate"></i>
+            Student / Élève
+        </h3>
+
+        <input
+            type="text"
+            id="studentName"
+            placeholder="Ex: Wilfried Momene"
+        >
+
+        <input
+            type="number"
+            id="totalSubjects"
+            placeholder="Nombre de matières"
+            min="1"
+        >
+
+        <button onclick="generateSubjects()">
+            <i class="fa-solid fa-wand-magic-sparkles"></i>
+            Générer
+        </button>
+
+        <button onclick="resetAll()">
+            <i class="fa-solid fa-rotate"></i>
+            Réinitialiser
+        </button>
+
+    </div>
+
+    <div id="subjectsContainer"></div>
+
+    <div class="card">
+
+        <h3>
+            <i class="fa-solid fa-chart-pie"></i>
+            Résultat
+        </h3>
+
+        <div id="result"></div>
+
+        <button onclick="calculate()">
+            <i class="fa-solid fa-calculator"></i>
+            Calculer
+        </button>
+
+        <button
+            id="saveBtn"
+            onclick="saveResult()"
+            style="display:none;"
+        >
+            <i class="fa-solid fa-floppy-disk"></i>
+            Sauvegarder
+        </button>
+
+    </div>
+
+</div>
+    </div> <!-- Fin du container -->
+
+    <!-- ====================== FOOTER ====================== -->
+        </div> <!-- Fin container -->
+
+    <!-- ====================== FOOTER PROFESSIONNEL ====================== -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-info">
+                <h3>UNILIFE</h3>
+                <p>Gestion des notes scolaires</p>
+            </div>
+
+            <div class="footer-contact">
+                <h4>Contactez-nous</h4>
+                <a href="tel:+237675558203" class="contact-link">
+                    <i class="fa-solid fa-phone"></i>
+                    +237 675 558 203
+                </a>
+                <a href="mailto:momenewilfried@gmail.com" class="contact-link">
+                    <i class="fa-solid fa-envelope"></i>
+                    momenewilfried@gmail.com
+                </a>
+            </div>
+
+            <div class="footer-copyright">
+                <p>&copy; Mai 2026 UNILIFE - Tous droits réservés</p>
+                <p>Développé par <strong>Wilfried Momene</strong></p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="dashboard.js"></script>
+</body>
+</html>
+
+    <script src="dashboard.js"></script>
+</body>
+</html>
+
+<script src="dashboard.js"></script>
+
+</body>
+</html>

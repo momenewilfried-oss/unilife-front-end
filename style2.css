@@ -1,0 +1,105 @@
+/* ===== GLOBAL ===== */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg, #eaf1ff, #ffffff);
+    height: 100vh;
+}
+
+/* Centre parfaitement la carte */
+.auth-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+/* Carte login */
+.card {
+    width: 360px;
+    background: white;
+    padding: 35px;
+    border-radius: 14px;
+    box-shadow: 0 15px 30px rgba(0,0,0,0.12);
+    text-align: center;
+}
+
+/* Titre */
+.card h2 {
+    color: #1e5eff;
+    margin-bottom: 25px;
+}
+
+/* Inputs */
+.card input {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 15px;
+    border: 1px solid #d6ddff;
+    border-radius: 8px;
+    outline: none;
+    transition: 0.3s;
+}
+
+.card input:focus {
+    border-color: #1e5eff;
+    box-shadow: 0 0 6px rgba(30, 94, 255, 0.3);
+}
+
+/* Bouton */
+.card button {
+    width: 100%;
+    padding: 12px;
+    background: #1e5eff;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 15px;
+    transition: 0.3s;
+}
+
+.card button:hover {
+    background: #0f3fd1;
+}
+
+/* Texte bas */
+.card p {
+    margin-top: 15px;
+    font-size: 14px;
+}
+
+.card a {
+    color: #1e5eff;
+    text-decoration: none;
+}
+
+.card a:hover {
+    text-decoration: underline;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .card {
+        width: 90%;
+        padding: 20px;
+    }
+
+    .card h2 {
+        font-size: 24px;
+    }
+
+    .card input {
+        padding: 10px;
+    }
+
+    .card button {
+        padding: 10px;
+        font-size: 14px;
+    }
+
+    .card p {
+        font-size: 13px;
+    }
+}
