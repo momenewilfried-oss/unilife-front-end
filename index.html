@@ -1,35 +1,73 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UNILIFE - Gestion des notes</title>
 
-    <link rel="manifest" href="/manifest.json">
-    <link rel="icon" href="/logo.png.png" type="image/png">
-    <link rel="apple-touch-icon" href="/logo.png.png">
-    <meta name="theme-color" content="#2563eb">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="UNILIFE">
+<meta name="msapplication-TileColor" content="#2563eb">
+<meta name="msapplication-config" content="browserconfig.xml">
+<meta name="theme-color" content="#2563eb">
+<meta name="description" content="Plateforme universitaire de gestion des notes et bulletins PDF">
 
-    <link rel="stylesheet" href="/style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<title>UNILIFE - Gestion des notes</title>
 
-    <script>
-        const token = localStorage.getItem("token");
-        if (!token) window.location.href = "/login.html";
-    </script>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="logo.png.png" type="image/png" sizes="32x32">
+<link rel="apple-touch-icon" href="logo.png.png" sizes="192x192">
+<link rel="icon" href="logo.png.png" sizes="192x192">
+<link rel="icon" href="logo.png.png" sizes="512x512">
+
+<!-- Preconnect pour améliorer les performances -->
+<link rel="preconnect" href="https://cdnjs.cloudflare.com">
+
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<script>
+const token = localStorage.getItem("token");
+
+if (!token) {
+    window.location.href = "login.html";
+}
+</script>
+
 </head>
-<body>
-    <!-- Ton header avec bouton Installer -->
-    <header class="header">
-        <div class="header-left">
-            <img src="/logo.png.png" alt="UNILIFE Logo" class="header-logo">
-            <div class="header-title">
-                <span class="main-title">UNILIFE</span>
-                <small>Gestion des notes</small>
-            </div>
-        </div>
 
-        <button class="theme-btn" onclick="toggleTheme()" title="Changer le thème">
+<body>
+
+<header class="header">
+
+    
+
+    <div class="header-left">
+
+    <img
+        src="logo.png.png"
+        alt="UNILIFE Logo"
+        class="header-logo"
+    >
+
+    <div class="header-title">
+        <span class="main-title">
+            UNILIFE
+        </span>
+
+        <small>
+            Gestion des notes
+        </small>
+    </div>
+
+</div>
+
+        <button
+            class="theme-btn"
+            onclick="toggleTheme()"
+            title="Changer le thème"
+        >
             <i class="fa-solid fa-moon"></i>
         </button>
 
@@ -38,48 +76,185 @@
             <span id="userInfo">Loading...</span>
         </div>
 
-        <button class="logout-btn" onclick="logout()" title="Déconnexion">
+        <button
+            class="logout-btn"
+            onclick="logout()"
+            title="Déconnexion"
+        >
             <i class="fa-solid fa-right-from-bracket"></i>
         </button>
 
-        <button id="installBtn" class="download-app-btn" style="display:none;" onclick="installApp()">
-            <i class="fa-solid fa-download"></i>
+        <button
+            id="downloadAppBtn"
+            class="download-app-btn"
+            onclick="downloadApp()"
+            title="Installer l'application sur votre appareil"
+            style="display: none;"
+        >
+            <i class="fa-solid fa-arrow-up-from-bracket"></i>
             Installer l'application
         </button>
-    </header>
 
-    <!-- Le reste de ton contenu (container, cards, etc.) reste IDENTIQUE -->
-    <div class="container">
-        <!-- ... copie tout ton contenu actuel ici ... -->
+        <div class="download-hint">
+            <small>Ouvrez cette page dans Chrome ou Edge via <strong>https://unilife-front-end.onrender.com</strong> (ou depuis le backend si vous servez le front depuis Render). L'installation PWA nécessite HTTPS et un navigateur compatible.</small>
+        </div>
+
     </div>
 
-    <footer class="footer"> <!-- ton footer --> </footer>
+</header>
 
+<div class="container">
+
+    <div class="card">
+
+        <h3>
+            <i class="fa-solid fa-school"></i>
+            Class / Classe
+        </h3>
+
+        <input
+            type="text"
+            id="className"
+            placeholder="Ex: PremiereA4"
+        >
+
+        <h3>
+            <i class="fa-solid fa-user-graduate"></i>
+            Student / Élève
+        </h3>
+
+        <input
+            type="text"
+            id="studentName"
+            placeholder="Ex: Wilfried Momene"
+        >
+
+        <input
+            type="number"
+            id="totalSubjects"
+            placeholder="Nombre de matières"
+            min="1"
+        >
+
+        <button onclick="generateSubjects()">
+            <i class="fa-solid fa-wand-magic-sparkles"></i>
+            Générer
+        </button>
+
+        <button onclick="resetAll()">
+            <i class="fa-solid fa-rotate"></i>
+            Réinitialiser
+        </button>
+
+    </div>
+
+    <div id="subjectsContainer"></div>
+
+    <div class="card">
+
+        <h3>
+            <i class="fa-solid fa-chart-pie"></i>
+            Résultat
+        </h3>
+
+        <div id="result"></div>
+
+        <button onclick="calculate()">
+            <i class="fa-solid fa-calculator"></i>
+            Calculer
+        </button>
+
+        <button
+            id="saveBtn"
+            onclick="saveResult()"
+            style="display:none;"
+        >
+            <i class="fa-solid fa-floppy-disk"></i>
+            Sauvegarder
+        </button>
+
+        <button
+            id="downloadPdfBtn"
+            class="download-pdf-btn"
+            onclick="downloadBulletinPDF()"
+            style="display:none;"
+            type="button"
+        >
+            <i class="fa-solid fa-file-pdf"></i>
+            Télécharger le bulletin PDF
+        </button>
+
+    </div>
+
+</div>
+
+    <!-- ====================== FOOTER PROFESSIONNEL ====================== -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-info">
+                <h3>UNILIFE</h3>
+                <p>Gestion des notes scolaires</p>
+            </div>
+
+            <div class="footer-contact">
+                <h4>Contactez-nous</h4>
+                <a href="tel:+237675558203" class="contact-link">
+                    <i class="fa-solid fa-phone"></i>
+                    +237 675 558 203
+                </a>
+                <a href="mailto:momenewilfried@gmail.com" class="contact-link">
+                    <i class="fa-solid fa-envelope"></i>
+                    momenewilfried@gmail.com
+                </a>
+            </div>
+
+            <div class="footer-copyright">
+                <p>&copy; Mai 2026 UNILIFE - Tous droits réservés</p>
+                <p>Développé par <strong>Wilfried Momene</strong></p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ====================== PWA SERVICE WORKER ====================== -->
     <script>
-        let deferredPrompt;
-
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-            document.getElementById('installBtn').style.display = 'inline-flex';
-        });
-
-        async function installApp() {
-            if (deferredPrompt) {
-                deferredPrompt.prompt();
-                const { outcome } = await deferredPrompt.userChoice;
-                if (outcome === 'accepted') {
-                    document.getElementById('installBtn').style.display = 'none';
-                }
-                deferredPrompt = null;
-            }
-        }
-
+        // Enregistrer le service worker pour PWA
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('/service-worker.js');
+            window.addEventListener('load', function () {
+                navigator.serviceWorker.register('service-worker.js')
+                    .then(function (registration) {
+                        console.log('✅ Service worker enregistré avec succès:', registration.scope);
+                        // Mettre à jour le cache si une nouvelle version est disponible
+                        registration.addEventListener('updatefound', function() {
+                            const newWorker = registration.installing;
+                            newWorker.addEventListener('statechange', function() {
+                                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                    console.log('⚡ Nouvelle version de l\'app disponible');
+                                }
+                            });
+                        });
+                    })
+                    .catch(function (error) {
+                        console.error('❌ Erreur enregistrement service worker:', error);
+                    });
+            });
         }
-    </script>
 
-    <script src="/dashboard.js"></script>
+        // ===== DIAGNOSTIC PWA =====
+        window.addEventListener('load', function() {
+            setTimeout(function() {
+                console.log('🔍 === DIAGNOSTIC PWA ===');
+                console.log('🔍 URL:', window.location.href);
+                console.log('🔍 Protocol:', window.location.protocol);
+                console.log('🔍 Hostname:', window.location.hostname);
+                console.log('🔍 UserAgent:', navigator.userAgent);
+                console.log('🔍 Service Worker:', 'serviceWorker' in navigator);
+                console.log('🔍 BeforeInstallPrompt:', 'onbeforeinstallprompt' in window);
+                console.log('🔍 Manifest link:', !!document.querySelector('link[rel="manifest"]'));
+                console.log('🔍 Display mode:', window.matchMedia('(display-mode: standalone)').matches ? 'standalone' : 'browser');
+                console.log('🔍 === FIN DIAGNOSTIC ===');
+            }, 2000);
+        });
+    </script>
+    <script src="dashboard.js"></script>
 </body>
 </html>

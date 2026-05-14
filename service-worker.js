@@ -1,4 +1,4 @@
-const CACHE_NAME = "unilife-v1";
+const CACHE_NAME = "unilife-v2";
 const urlsToCache = [
   "/",
   "/index.html",
@@ -12,7 +12,8 @@ const urlsToCache = [
   "/auth.js",
   "/manifest.json",
   "/logo.png.png",
-  "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+  "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css",
+  "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css.map"
 ];
 
 // Installation du service worker
@@ -89,3 +90,4 @@ self.addEventListener("fetch", (event) => {
       })
   );
 });
+

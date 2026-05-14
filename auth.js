@@ -1,4 +1,4 @@
-const API = "https://unilife-backend-qgap.onrender.com/api/auth";
+const API = "http://localhost:3002/api/auth";
 
 /* =========================
    UTILITAIRES
