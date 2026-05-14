@@ -8,9 +8,9 @@
     <meta
         name="viewport"
         content="width=device-width, initial-scale=1.0"
-    />
+    >
 
-    <title>Register - UNILIFE</title>
+    <title>Inscription - UNILIFE</title>
 
     <link rel="stylesheet" href="style2.css">
 
@@ -27,18 +27,31 @@
 
     <div class="card">
 
-        <h2>Créez votre compte</h2>
+        <!-- LOGO -->
+        <div class="logo-box">
+            <img
+                src="logo.png.png"
+                alt="UNILIFE Logo"
+                class="logo"
+            >
+        </div>
+
+        <h2>Créer un compte</h2>
+
+        <p>
+            Rejoignez UNILIFE pour gérer vos notes
+        </p>
 
         <input
             id="name"
             type="text"
-            placeholder="Nom complet établissement"
+            placeholder="Nom complet"
         >
 
         <input
             id="email"
             type="email"
-            placeholder="Email"
+            placeholder="Votre email"
         >
 
         <input
@@ -61,14 +74,13 @@
                 style="display:none;"
             >
                 <i class="fa-solid fa-spinner fa-spin"></i>
-                Chargement...
+                Création...
             </span>
 
         </button>
 
         <p>
             Vous avez déjà un compte ?
-
             <a href="login.html">
                 Se connecter
             </a>

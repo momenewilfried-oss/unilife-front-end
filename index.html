@@ -1,49 +1,35 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UNILIFE - Gestion des notes</title>
 
-<meta charset="UTF-8">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="icon" href="/logo.png.png" type="image/png">
+    <link rel="apple-touch-icon" href="/logo.png.png">
+    <meta name="theme-color" content="#2563eb">
 
-<meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-/>
+    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
-<title>UNILIFE gestion des notes</title>
-
-<link rel="stylesheet" href="style.css">
-
-<link
-    rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
-/>
-
-<script>
-const token = localStorage.getItem("token");
-
-if (!token) {
-    window.location.href = "login.html";
-}
-</script>
-
+    <script>
+        const token = localStorage.getItem("token");
+        if (!token) window.location.href = "/login.html";
+    </script>
 </head>
-
 <body>
+    <!-- Ton header avec bouton Installer -->
+    <header class="header">
+        <div class="header-left">
+            <img src="/logo.png.png" alt="UNILIFE Logo" class="header-logo">
+            <div class="header-title">
+                <span class="main-title">UNILIFE</span>
+                <small>Gestion des notes</small>
+            </div>
+        </div>
 
-<header class="header">
-
-    <div class="header-left">
-        <i class="fa-solid fa-chart-line"></i>
-        <span>UNILIFE gestion des notes</span>
-    </div>
-
-    <div class="user-box">
-
-        <button
-            class="theme-btn"
-            onclick="toggleTheme()"
-            title="Changer le thème"
-        >
+        <button class="theme-btn" onclick="toggleTheme()" title="Changer le thème">
             <i class="fa-solid fa-moon"></i>
         </button>
 
@@ -52,132 +38,48 @@ if (!token) {
             <span id="userInfo">Loading...</span>
         </div>
 
-        <button
-            class="logout-btn"
-            onclick="logout()"
-            title="Déconnexion"
-        >
+        <button class="logout-btn" onclick="logout()" title="Déconnexion">
             <i class="fa-solid fa-right-from-bracket"></i>
         </button>
 
+        <button id="installBtn" class="download-app-btn" style="display:none;" onclick="installApp()">
+            <i class="fa-solid fa-download"></i>
+            Installer l'application
+        </button>
+    </header>
+
+    <!-- Le reste de ton contenu (container, cards, etc.) reste IDENTIQUE -->
+    <div class="container">
+        <!-- ... copie tout ton contenu actuel ici ... -->
     </div>
 
-</header>
+    <footer class="footer"> <!-- ton footer --> </footer>
 
-<div class="container">
+    <script>
+        let deferredPrompt;
 
-    <div class="card">
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            document.getElementById('installBtn').style.display = 'inline-flex';
+        });
 
-        <h3>
-            <i class="fa-solid fa-school"></i>
-            Class / Classe
-        </h3>
+        async function installApp() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                if (outcome === 'accepted') {
+                    document.getElementById('installBtn').style.display = 'none';
+                }
+                deferredPrompt = null;
+            }
+        }
 
-        <input
-            type="text"
-            id="className"
-            placeholder="Ex: PremiereA4"
-        >
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/service-worker.js');
+        }
+    </script>
 
-        <h3>
-            <i class="fa-solid fa-user-graduate"></i>
-            Student / Élève
-        </h3>
-
-        <input
-            type="text"
-            id="studentName"
-            placeholder="Ex: Wilfried Momene"
-        >
-
-        <input
-            type="number"
-            id="totalSubjects"
-            placeholder="Nombre de matières"
-            min="1"
-        >
-
-        <button onclick="generateSubjects()">
-            <i class="fa-solid fa-wand-magic-sparkles"></i>
-            Générer
-        </button>
-
-        <button onclick="resetAll()">
-            <i class="fa-solid fa-rotate"></i>
-            Réinitialiser
-        </button>
-
-    </div>
-
-    <div id="subjectsContainer"></div>
-
-    <div class="card">
-
-        <h3>
-            <i class="fa-solid fa-chart-pie"></i>
-            Résultat
-        </h3>
-
-        <div id="result"></div>
-
-        <button onclick="calculate()">
-            <i class="fa-solid fa-calculator"></i>
-            Calculer
-        </button>
-
-        <button
-            id="saveBtn"
-            onclick="saveResult()"
-            style="display:none;"
-        >
-            <i class="fa-solid fa-floppy-disk"></i>
-            Sauvegarder
-        </button>
-
-    </div>
-
-</div>
-    </div> <!-- Fin du container -->
-
-    <!-- ====================== FOOTER ====================== -->
-        </div> <!-- Fin container -->
-
-    <!-- ====================== FOOTER PROFESSIONNEL ====================== -->
-    <footer class="footer">
-        <div class="footer-container">
-            <div class="footer-info">
-                <h3>UNILIFE</h3>
-                <p>Gestion des notes scolaires</p>
-            </div>
-
-            <div class="footer-contact">
-                <h4>Contactez-nous</h4>
-                <a href="tel:+237675558203" class="contact-link">
-                    <i class="fa-solid fa-phone"></i>
-                    +237 675 558 203
-                </a>
-                <a href="mailto:momenewilfried@gmail.com" class="contact-link">
-                    <i class="fa-solid fa-envelope"></i>
-                    momenewilfried@gmail.com
-                </a>
-            </div>
-
-            <div class="footer-copyright">
-                <p>&copy; Mai 2026 UNILIFE - Tous droits réservés</p>
-                <p>Développé par <strong>Wilfried Momene</strong></p>
-            </div>
-        </div>
-    </footer>
-
-    <script src="dashboard.js"></script>
-</body>
-</html>
-
-    <script src="dashboard.js"></script>
-</body>
-</html>
-
-<script src="dashboard.js"></script>
-
+    <script src="/dashboard.js"></script>
 </body>
 </html>

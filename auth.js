@@ -1,137 +1,73 @@
-console.log("AUTH JS LOADED");
+const API = "https://unilife-backend-qgap.onrender.com/api/auth";
 
 /* =========================
-   PRODUCTION API
+   UTILITAIRES
 ========================= */
-const API =
-    "https://unilife-backend-qgap.onrender.com/api/auth";
+function showLoader(btnId, textId, loaderId) {
+    const btn = document.getElementById(btnId);
+    const text = document.getElementById(textId);
+    const loader = document.getElementById(loaderId);
 
-/* =========================
-   EMAIL VALIDATION
-========================= */
-function emailValide(email) {
+    if (btn) btn.disabled = true;
+    if (text) text.style.display = "none";
+    if (loader) loader.style.display = "inline";
+}
 
-    const regex =
-        /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-z]{2,}$/;
+function hideLoader(btnId, textId, loaderId) {
+    const btn = document.getElementById(btnId);
+    const text = document.getElementById(textId);
+    const loader = document.getElementById(loaderId);
 
-    return regex.test(email);
+    if (btn) btn.disabled = false;
+    if (text) text.style.display = "inline";
+    if (loader) loader.style.display = "none";
+}
+
+function isValidEmail(email) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
 
 /* =========================
-   NAME VALIDATION
+   FORGOT PASSWORD
 ========================= */
-function nomValide(name) {
+async function sendResetLink() {
+    const email = document.getElementById("email").value.trim();
 
-    const regex =
-        /^[a-zA-ZÀ-ÿ\s'-]{2,50}$/;
-
-    return regex.test(name);
-}
-
-/* =========================
-   REGISTER
-========================= */
-async function register() {
-
-    const name =
-        document.getElementById("name").value.trim();
-
-    const email =
-        document.getElementById("email").value.trim();
-
-    const password =
-        document.getElementById("password").value.trim();
-
-    const registerBtn =
-        document.getElementById("registerBtn");
-
-    const registerText =
-        document.getElementById("registerText");
-
-    const registerLoader =
-        document.getElementById("registerLoader");
-
-    if (!name || !email || !password) {
-
-        alert("Tous les champs sont obligatoires");
-
+    if (!email) {
+        alert("Veuillez entrer votre email");
         return;
     }
 
-    if (!nomValide(name)) {
-
-        alert("Nom invalide");
-
+    if (!isValidEmail(email)) {
+        alert("Veuillez entrer un email valide");
         return;
     }
-
-    if (!emailValide(email)) {
-
-        alert("Adresse email invalide");
-
-        return;
-    }
-
-    if (password.length < 6) {
-
-        alert("Mot de passe trop court");
-
-        return;
-    }
-
-    /* =========================
-       START LOADING
-    ========================= */
-
-    registerBtn.disabled = true;
-
-    registerText.style.display = "none";
-
-    registerLoader.style.display = "inline-block";
 
     try {
+        showLoader("resetBtn", "resetText", "resetLoader");
 
-        const res = await fetch(`${API}/register`, {
-
+        const res = await fetch(`${API}/forgot-password`, {
             method: "POST",
-
-            headers: {
-                "Content-Type": "application/json"
-            },
-
-            body: JSON.stringify({
-                name,
-                email,
-                password
-            })
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email })
         });
 
         const data = await res.json();
 
-        alert(data.message);
+        hideLoader("resetBtn", "resetText", "resetLoader");
 
         if (data.success) {
-
-            window.location.href = "login.html";
+            alert("✅ Lien de réinitialisation envoyé ! Vérifiez votre boîte mail (et les spams).");
+            // Optionnel : rediriger après succès
+            // setTimeout(() => window.location.href = "login.html", 2000);
+        } else {
+            alert("❌ " + (data.message || "Une erreur est survenue"));
         }
 
     } catch (err) {
-
-        console.log(err);
-
-        alert("Erreur serveur");
-
-    } finally {
-
-        /* =========================
-           STOP LOADING
-        ========================= */
-
-        registerBtn.disabled = false;
-
-        registerText.style.display = "inline-block";
-
-        registerLoader.style.display = "none";
+        console.error(err);
+        hideLoader("resetBtn", "resetText", "resetLoader");
+        alert("Erreur de connexion au serveur");
     }
 }
 
@@ -139,94 +75,143 @@ async function register() {
    LOGIN
 ========================= */
 async function login() {
-
-    const email =
-        document.getElementById("email").value.trim();
-
-    const password =
-        document.getElementById("password").value.trim();
-
-    const loginBtn =
-        document.getElementById("loginBtn");
-
-    const loginText =
-        document.getElementById("loginText");
-
-    const loginLoader =
-        document.getElementById("loginLoader");
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value;
 
     if (!email || !password) {
-
         alert("Tous les champs sont obligatoires");
-
         return;
     }
 
-    if (!emailValide(email)) {
-
-        alert("Adresse email invalide");
-
+    if (!isValidEmail(email)) {
+        alert("Email invalide");
         return;
     }
-
-    /* =========================
-       START LOADING
-    ========================= */
-
-    loginBtn.disabled = true;
-
-    loginText.style.display = "none";
-
-    loginLoader.style.display = "inline-block";
 
     try {
+        showLoader("loginBtn", "loginText", "loginLoader");
 
         const res = await fetch(`${API}/login`, {
-
             method: "POST",
-
-            headers: {
-                "Content-Type": "application/json"
-            },
-
-            body: JSON.stringify({
-                email,
-                password
-            })
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email, password })
         });
 
         const data = await res.json();
 
-        if (data.token) {
+        hideLoader("loginBtn", "loginText", "loginLoader");
 
-            localStorage.setItem(
-                "token",
-                data.token
-            );
-
+        if (data.success && data.token) {
+            localStorage.setItem("token", data.token);
             window.location.href = "index.html";
-
         } else {
-
-            alert(data.message);
+            alert("❌ " + (data.message || "Email ou mot de passe incorrect"));
         }
 
     } catch (err) {
+        console.error(err);
+        hideLoader("loginBtn", "loginText", "loginLoader");
+        alert("Erreur de connexion au serveur");
+    }
+}
 
-        console.log(err);
+/* =========================
+   REGISTER
+========================= */
+async function register() {
+    const name = document.getElementById("name").value.trim();
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value;
+    const confirmPassword = document.getElementById("confirmPassword")?.value; // Si tu ajoutes ce champ
 
-        alert("Erreur serveur");
+    if (!name || !email || !password) {
+        alert("Tous les champs sont obligatoires");
+        return;
+    }
 
-    } finally {
+    if (!isValidEmail(email)) {
+        alert("Veuillez entrer un email valide");
+        return;
+    }
 
-        /* =========================
-           STOP LOADING
-        ========================= */
+    if (password.length < 6) {
+        alert("Le mot de passe doit contenir au moins 6 caractères");
+        return;
+    }
 
-        loginBtn.disabled = false;
+    if (confirmPassword && password !== confirmPassword) {
+        alert("Les mots de passe ne correspondent pas");
+        return;
+    }
 
-        loginText.style.display = "inline-block";
+    try {
+        // Si tu as un bouton register avec loader
+        const registerBtn = document.getElementById("registerBtn");
+        const registerText = document.getElementById("registerText");
+        const registerLoader = document.getElementById("registerLoader");
 
-        loginLoader.style.display = "none";
+        if (registerBtn) registerBtn.disabled = true;
+        if (registerText) registerText.style.display = "none";
+        if (registerLoader) registerLoader.style.display = "inline";
+
+        const res = await fetch(`${API}/register`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ name, email, password })
+        });
+
+        const data = await res.json();
+
+        if (registerBtn) registerBtn.disabled = false;
+        if (registerText) registerText.style.display = "inline";
+        if (registerLoader) registerLoader.style.display = "none";
+
+        if (data.success && data.token) {
+            localStorage.setItem("token", data.token);
+            alert("✅ Compte créé avec succès !");
+            window.location.href = "index.html";
+        } else {
+            alert("❌ " + (data.message || "Erreur lors de l'inscription"));
+        }
+
+    } catch (err) {
+        console.error(err);
+        // Reset loader en cas d'erreur
+        const registerBtn = document.getElementById("registerBtn");
+        const registerText = document.getElementById("registerText");
+        const registerLoader = document.getElementById("registerLoader");
+        
+        if (registerBtn) registerBtn.disabled = false;
+        if (registerText) registerText.style.display = "inline";
+        if (registerLoader) registerLoader.style.display = "none";
+
+        alert("Erreur de connexion au serveur");
+    }
+}
+
+/* =========================
+   NOUVELLE FONCTION : LOGOUT
+========================= */
+function logout() {
+    localStorage.removeItem("token");
+    window.location.href = "login.html";
+}
+
+/* =========================
+   NOUVELLE FONCTION : VÉRIFIER SI CONNECTÉ
+========================= */
+async function checkAuth() {
+    const token = localStorage.getItem("token");
+    if (!token) return false;
+
+    try {
+        const res = await fetch(`${API}/me`, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+        const data = await res.json();
+        return data.success;
+    } catch (err) {
+        console.error(err);
+        return false;
     }
 }

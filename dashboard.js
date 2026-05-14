@@ -1,11 +1,15 @@
 let subjectsData = [];
 let isLocked = false;
 let lastResult = null;
+let savedStudentId = null;
 
 /* =========================
    PRODUCTION API
 ========================= */
-const API = "https://unilife-backend-qgap.onrender.com";
+// Change cette ligne :
+
+// Par celle-ci (pour travailler en local) :
+const API = "https://unilife-backend-qgap.onrender.com/api";
 
 /* =========================
    VALIDATIONS
@@ -191,10 +195,12 @@ function calculate() {
 /* =========================
    RESET
 ========================= */
-function resetAll() {
+function resetAll(preserveSavedStudentId = false) {
     document.getElementById("subjectsContainer").innerHTML = "";
     document.getElementById("result").innerHTML = "";
     document.getElementById("saveBtn").style.display = "none";
+    const pdfBtn = document.getElementById("downloadPdfBtn");
+    if (pdfBtn && !preserveSavedStudentId) pdfBtn.style.display = "none";
     document.getElementById("className").value = "";
     document.getElementById("studentName").value = "";
     document.getElementById("totalSubjects").value = "";
@@ -202,6 +208,7 @@ function resetAll() {
     subjectsData = [];
     isLocked = false;
     lastResult = null;
+    if (!preserveSavedStudentId) savedStudentId = null;
 }
 
 /* =========================
@@ -242,13 +249,60 @@ async function saveResult() {
         const result = await response.json();
 
         if (result.success) {
-            alert(" Bulletin enregistré avec succès !");
-            resetAll();
+            const studentId = result.studentId || result.id;
+            savedStudentId = studentId || null;
+            alert("Bulletin enregistré avec succès !");
+            resetAll(true);
+            if (savedStudentId) {
+                const downloadBtn = document.getElementById("downloadPdfBtn");
+                if (downloadBtn) {
+                    downloadBtn.style.display = "inline-flex";
+                }
+            }
         } else {
             alert("❌ " + result.message);
         }
     } catch (err) {
         console.error(err);
         alert("Erreur de connexion au serveur");
+    }
+}
+
+async function downloadBulletinPDF(studentId) {
+    const token = localStorage.getItem("token");
+    if (!token) return logout();
+
+    const id = studentId || savedStudentId;
+    if (!id) {
+        alert("Aucun bulletin disponible pour le téléchargement.");
+        return;
+    }
+
+    try {
+        const response = await fetch(`${API}/student/${id}/pdf`, {
+            method: "GET",
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+
+        if (!response.ok) {
+            const data = await response.json().catch(() => null);
+            const message = data?.message || "Erreur lors du téléchargement du PDF.";
+            throw new Error(message);
+        }
+
+        const blob = await response.blob();
+        const downloadUrl = window.URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = downloadUrl;
+        link.download = `bulletin-${id}.pdf`;
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        window.URL.revokeObjectURL(downloadUrl);
+    } catch (err) {
+        console.error(err);
+        alert("Impossible de télécharger le bulletin PDF : " + err.message);
     }
 }

@@ -103,3 +103,15 @@ body {
         font-size: 13px;
     }
 }
+/* =========================
+   LOGO AUTH
+========================= */
+.logo-box {
+    margin-bottom: 20px;
+}
+
+.logo {
+    width: 140px;
+    height: auto;
+    object-fit: contain;
+}
