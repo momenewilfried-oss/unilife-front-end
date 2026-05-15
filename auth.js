@@ -1,4 +1,7 @@
-const API = "http://localhost:3002/api/auth";
+const API = window.location.hostname === "localhost" || 
+            window.location.hostname === "127.0.0.1" 
+            ? "http://localhost:3002/api/auth" 
+            : "https://unilife-backend-qgap.onrender.com/api/auth";
 
 /* =========================
    UTILITAIRES
@@ -57,9 +60,7 @@ async function sendResetLink() {
         hideLoader("resetBtn", "resetText", "resetLoader");
 
         if (data.success) {
-            alert("✅ Lien de réinitialisation envoyé ! Vérifiez votre boîte mail (et les spams).");
-            // Optionnel : rediriger après succès
-            // setTimeout(() => window.location.href = "login.html", 2000);
+            alert("✅ Lien de réinitialisation envoyé ! Vérifiez votre boîte mail.");
         } else {
             alert("❌ " + (data.message || "Une erreur est survenue"));
         }
@@ -122,7 +123,7 @@ async function register() {
     const name = document.getElementById("name").value.trim();
     const email = document.getElementById("email").value.trim();
     const password = document.getElementById("password").value;
-    const confirmPassword = document.getElementById("confirmPassword")?.value; // Si tu ajoutes ce champ
+    const confirmPassword = document.getElementById("confirmPassword")?.value;
 
     if (!name || !email || !password) {
         alert("Tous les champs sont obligatoires");
@@ -145,7 +146,6 @@ async function register() {
     }
 
     try {
-        // Si tu as un bouton register avec loader
         const registerBtn = document.getElementById("registerBtn");
         const registerText = document.getElementById("registerText");
         const registerLoader = document.getElementById("registerLoader");
@@ -176,7 +176,7 @@ async function register() {
 
     } catch (err) {
         console.error(err);
-        // Reset loader en cas d'erreur
+        // Reset loader
         const registerBtn = document.getElementById("registerBtn");
         const registerText = document.getElementById("registerText");
         const registerLoader = document.getElementById("registerLoader");
@@ -190,7 +190,7 @@ async function register() {
 }
 
 /* =========================
-   NOUVELLE FONCTION : LOGOUT
+   LOGOUT
 ========================= */
 function logout() {
     localStorage.removeItem("token");
@@ -198,14 +198,14 @@ function logout() {
 }
 
 /* =========================
-   NOUVELLE FONCTION : VÉRIFIER SI CONNECTÉ
+   VÉRIFIER SI CONNECTÉ
 ========================= */
 async function checkAuth() {
     const token = localStorage.getItem("token");
     if (!token) return false;
 
     try {
-        const res = await fetch(`${API}/me`, {
+        const res = await fetch(`${API.replace('/api/auth', '/api/auth/me')}`, {
             headers: { Authorization: `Bearer ${token}` }
         });
         const data = await res.json();

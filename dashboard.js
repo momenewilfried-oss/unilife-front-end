@@ -1,4 +1,3 @@
-
 let subjectsData = [];
 let isLocked = false;
 let lastResult = null;
@@ -106,76 +105,38 @@ function initPWA() {
     console.log("🔍 Service Worker disponible:", 'serviceWorker' in navigator);
     console.log("🔍 BeforeInstallPromptEvent disponible:", 'BeforeInstallPromptEvent' in window);
 
-    // TOUJOURS enregistrer le listener, ne pas retourner trop tôt
-    // ===== EVENT: beforeinstallprompt =====
     window.addEventListener("beforeinstallprompt", (e) => {
         console.log("✅ Événement beforeinstallprompt reçu!");
 
-        // Empêcher l'affichage automatique du prompt
         e.preventDefault();
-
-        // Stocker l'événement pour plus tard
         deferredPrompt = e;
 
-        // Afficher le bouton d'installation
         if (downloadBtn) {
             downloadBtn.style.display = "inline-flex";
-            console.log("✅ Bouton d'installation affiché");
         }
-
-        // Masquer le hint
         if (downloadHint) {
             downloadHint.style.display = "none";
         }
-
-        console.log("🎯 PWA disponible pour installation");
     });
 
-    // ===== EVENT: appinstalled =====
     window.addEventListener("appinstalled", () => {
         console.log("🎉 PWA installée avec succès");
-
-        // Masquer le bouton après installation
-        if (downloadBtn) {
-            downloadBtn.style.display = "none";
-        }
-
-        // Effacer la référence
+        if (downloadBtn) downloadBtn.style.display = "none";
         deferredPrompt = null;
     });
 
-    // ===== VÉRIFICATION: Mode Standalone =====
     if (window.matchMedia("(display-mode: standalone)").matches) {
-        console.log("📱 Application en mode standalone");
-        if (downloadBtn) {
-            downloadBtn.style.display = "none";
-        }
-        if (downloadHint) {
-            downloadHint.style.display = "none";
-        }
+        if (downloadBtn) downloadBtn.style.display = "none";
+        if (downloadHint) downloadHint.style.display = "none";
     }
 
-    // ===== VÉRIFIER APRÈS DÉLAI =====
     setTimeout(() => {
-        // Si après 5 secondes, deferredPrompt n'est toujours pas défini
-        // c'est que beforeinstallprompt n'a pas été déclenché
         if (!deferredPrompt && downloadBtn) {
-            console.warn("⚠️ Après 5s, beforeinstallprompt n'a pas été reçu");
-            console.log("🔍 Vérification diagnostic:");
-            console.log("  - Service Worker:", 'serviceWorker' in navigator);
-            console.log("  - BeforeInstallPromptEvent:", 'BeforeInstallPromptEvent' in window);
-            console.log("  - Manifest tag:", !!document.querySelector('link[rel="manifest"]'));
-            console.log("  - HTTPS/localhost:", location.protocol === 'https:' || location.hostname === 'localhost');
-            console.log("  - Standalone mode:", window.matchMedia("(display-mode: standalone)").matches);
-            
-            // Afficher le message d'erreur
             if (downloadHint) {
-                downloadHint.innerHTML = `<small>Installation PWA non disponible sur ce navigateur. Utilisez Chrome ou Edge pour une meilleure expérience.</small>`;
+                downloadHint.innerHTML = `<small>Installation PWA non disponible sur ce navigateur. Utilisez Chrome ou Edge.</small>`;
                 downloadHint.style.display = "block";
             }
-            if (downloadBtn) {
-                downloadBtn.style.display = "none";
-            }
+            if (downloadBtn) downloadBtn.style.display = "none";
         }
     }, 5000);
 }
@@ -183,107 +144,26 @@ function initPWA() {
 function downloadApp() {
     const downloadBtn = document.getElementById("downloadAppBtn");
 
-    console.log("🔍 Tentative d'installation PWA");
-    console.log("🔍 deferredPrompt disponible:", !!deferredPrompt);
-    console.log("🔍 Navigateur:", navigator.userAgent);
-
     if (!deferredPrompt) {
-        // Message plus informatif selon le navigateur
-        const isEdge = /Edg/.test(navigator.userAgent);
-        const isFirefox = /Firefox/.test(navigator.userAgent);
-        const isSafari = /Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent);
-
-        let message = "Installation PWA non disponible sur ce navigateur.";
-
-        if (isEdge) {
-            message += "\\n\\n💡 Pour Edge :\\n- Assurez-vous d'utiliser HTTPS (ou localhost)\\n- Vérifiez que le manifest.json est valide\\n- Essayez de rafraîchir la page\\n- Consultez EDGE-PWA-TROUBLESHOOTING.md\\n- Utilisez Chrome pour une meilleure compatibilité";
-        } else if (isFirefox) {
-            message += "\\n\\n💡 Pour Firefox :\\n- L'installation PWA est limitée\\n- Utilisez Chrome ou Edge pour l'installation";
-        } else if (isSafari) {
-            message += "\\n\\n💡 Pour Safari :\\n- Utilisez le menu Partager → \"Ajouter à l'écran d'accueil\"\\n- Ou utilisez Chrome pour une meilleure expérience";
-        } else {
-            message += "\\n\\n💡 Essayez :\\n- Chrome ou Edge pour l'installation PWA\\n- Rafraîchir la page\\n- Vider le cache du navigateur";
-        }
-
-        alert(message);
+        alert("Installation PWA non disponible sur ce navigateur.\n\nEssayez avec Chrome ou Edge.");
         return;
     }
 
-    // Afficher le prompt d'installation
-    console.log("🚀 Affichage du prompt d'installation");
     deferredPrompt.prompt();
-
-    // Attendre la réponse de l'utilisateur
     deferredPrompt.userChoice.then((choiceResult) => {
-        console.log("📊 Réponse utilisateur:", choiceResult.outcome);
-
         if (choiceResult.outcome === "accepted") {
-            console.log("✅ Utilisateur a accepté l'installation PWA");
-            // Masquer le bouton après l'acceptation
-            if (downloadBtn) {
-                downloadBtn.style.display = "none";
-            }
-        } else {
-            console.log("❌ Utilisateur a refusé l'installation PWA");
+            if (downloadBtn) downloadBtn.style.display = "none";
         }
-        // Réinitialiser le deferredPrompt
         deferredPrompt = null;
-    }).catch((error) => {
-        console.error("❌ Erreur lors de l'installation:", error);
-        alert("Erreur lors de l'installation. Veuillez réessayer.");
     });
 }
 
-// Initialiser PWA au chargement du DOM
+// Initialiser PWA
 if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", initPWA);
 } else {
     initPWA();
 }
-
-/* =========================
-   PWA COMPATIBILITY CHECK
-========================= */
-function checkPWACompatibility() {
-    const results = {
-        serviceWorker: 'serviceWorker' in navigator,
-        beforeInstallPrompt: 'onbeforeinstallprompt' in window || 'BeforeInstallPromptEvent' in window,
-        manifest: !!document.querySelector('link[rel="manifest"]'),
-        https: location.protocol === 'https:' || location.hostname === 'localhost',
-        standalone: window.matchMedia('(display-mode: standalone)').matches
-    };
-
-    console.log("🔍 Diagnostic PWA:", results);
-
-    // Vérifications spécifiques pour Edge
-    const isEdge = /Edg/.test(navigator.userAgent);
-    if (isEdge) {
-        console.log("🔍 Navigateur Edge détecté - vérifications supplémentaires");
-
-        // Edge peut être plus strict sur HTTPS
-        if (!results.https) {
-            console.warn("⚠️ Edge nécessite HTTPS pour PWA (localhost est OK)");
-        }
-
-        // Vérifier que le manifest est accessible
-        fetch('manifest.json')
-            .then(response => {
-                if (!response.ok) {
-                    console.error("❌ Manifest.json non accessible:", response.status);
-                } else {
-                    console.log("✅ Manifest.json accessible");
-                }
-            })
-            .catch(error => {
-                console.error("❌ Erreur chargement manifest:", error);
-            });
-    }
-
-    return results;
-}
-
-// Appeler la vérification après l'initialisation
-setTimeout(checkPWACompatibility, 1000);
 
 /* =========================
    GENERATE SUBJECTS
@@ -462,6 +342,9 @@ async function saveResult() {
     }
 }
 
+/* =========================
+   DOWNLOAD PDF + RÉINITIALISATION AUTOMATIQUE
+========================= */
 async function downloadBulletinPDF(studentId) {
     const token = localStorage.getItem("token");
     if (!token) return logout();
@@ -495,6 +378,15 @@ async function downloadBulletinPDF(studentId) {
         link.click();
         link.remove();
         window.URL.revokeObjectURL(downloadUrl);
+
+        // ====================== RÉINITIALISATION AUTOMATIQUE ======================
+        alert("✅ Bulletin téléchargé avec succès !\n\nL'application se réinitialise...");
+
+       setTimeout(() => {
+    savedStudentId = null;
+    resetAll();
+}, 1000);
+
     } catch (err) {
         console.error(err);
         alert("Impossible de télécharger le bulletin PDF : " + err.message);
